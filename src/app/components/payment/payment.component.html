@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+</head>
+<body>
+
+<div class="row">
+  <div class="col-75">
+    <div class="container">
+      <form [formGroup]="rentalForm" method="post">
+        <div class="row">
+          <div class="col-50">
+            <h3>	Billing Address </h3>
+            <label for="fname"><i class="fa fa-user"></i> Full Name</label>
+            <input type="text" id="fname" name="firstname" placeholder="Fatih Çil">
+            <label for="email"><i class="fa fa-envelope"></i> Email</label>
+            <input type="text" id="email" name="email" placeholder="fatihcil.2001@gmail.com">
+            <label for="adr"><i class="fa fa-address-card-o"></i> Adress</label>
+            <input type="text" id="adr" name="address" placeholder="www.fatihcil.com">
+            <label for="city"><i class="fa fa-institution"></i> City</label>
+            <input type="text" id="city" name="city" placeholder="City">
+
+            <div class="row">
+              <div class="col-50">
+                <label for="state">Street</label>
+                <input type="text" id="state" name="state" placeholder="Street">
+              </div>
+
+            </div>
+          </div>
+
+          <div class="col-50">
+            <h3>Card Information</h3>
+            <label for="cname">Card Name</label>
+            <input type="text" formControlName="cardHolderName"
+                   [(ngModel)]="fakeCreditCard.cardHolderName" id="cname"
+                   name="cardname" placeholder="Name">
+            <div  class="alert alert-danger"
+                  *ngIf="rentalForm.get('cardHolderName').hasError('required') &&
+                  rentalForm.get('cardHolderName').dirty">Card Name Required!</div>
+
+            <label for="ccnum">Card Number</label>
+            <input type="text" formControlName="cardNumber"
+                   [(ngModel)]="fakeCreditCard.cardNumber" id="ccnum"
+                   name="cardnumber" placeholder="1111222233334444">
+            <div  class="alert alert-danger"
+                  *ngIf="rentalForm.get('cardNumber').hasError('required') &&
+                  rentalForm.get('cardNumber').dirty">Card Number Required!</div>
+
+            <label for="expmonth">Month</label>
+            <input type="text" formControlName="expirationMonth"
+                   [(ngModel)]="fakeCreditCard.expirationMonth" id="expmonth"
+                   name="expmonth" placeholder="5">
+            <div  class="alert alert-danger"
+                  *ngIf="rentalForm.get('expirationMonth').hasError('required') &&
+                  rentalForm.get('expirationMonth').dirty">Month cannot be left blank</div>
+
+            <div class="row">
+              <div class="col-50">
+                <label for="expyear">Year</label>
+                <input type="text" formControlName="expirationYear"
+                       [(ngModel)]="fakeCreditCard.expirationYear" id="expyear"
+                       name="expyear" placeholder="2025">
+                <div  class="alert alert-danger"
+                      *ngIf="rentalForm.get('expirationYear').hasError('required') &&
+                  rentalForm.get('expirationYear').dirty">Year cannot be left blank</div>
+
+
+              </div>
+              <div class="col-50">
+                <label for="cvv">Cvv</label>
+                <input type="text" formControlName="cvv"
+                       [(ngModel)]="fakeCreditCard.cvv" id="cvv"
+                       name="cvv" placeholder="352">
+                <div  class="alert alert-danger"
+                      *ngIf="rentalForm.get('cvv').hasError('required') &&
+                  rentalForm.get('cvv').dirty">Cvv cannot be left blank</div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <label>
+          <input type="checkbox" checked="checked" name="sameadr"> Save Address Information
+        </label>
+        <button (click)="addRental(rental, fakeCreditCard)" [disabled]="!rentalForm.valid" class="btn">Rent Now</button>
+      </form>
+    </div>
+  </div>
+</div>
+</body>
+</html>
