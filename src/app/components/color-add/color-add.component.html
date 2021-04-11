@@ -1,21 +1,53 @@
-<div class="container">
-  <div class="col-md-12">
-    <div class="card">
-      <div class="card-header"><h5 class="card-title">Add new color</h5></div>
-      <div class="card-body">
-        <form [formGroup]="colorAddForm">
-          <div class="mb-3 row">
-            <label for="colorName" class="col-sm-2 col-form-label">Color Name</label>
-            <div class="col-sm-10">
-              <input type="text" id="colorName" formControlName="colorName"
-                     class="form-control" placeholder="Renk Adı"/>
-            </div>
-          </div>
-        </form>
-      </div>
-      <div class="card-footer">
-        <button class="btn btn-outline-primary" (click)="addToColor()">Add Color</button>
-      </div>
-    </div>
-  </div>
+<div>
+    <table id="colorsTable" class="table table-hover table-striped mt-4 border">
+        <thead>
+        <tr>
+           <th>Color Id</th>
+           <th>Color Name</th>
+           <th></th>
+  
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let color of colors"  routerLink="/colors/{{color.colorId}}">
+           <th>{{ color.colorId }}</th>
+           <td>{{ color.colorName  }} </td>
+           <td><button class="btn btn-warning">Update</button></td>
+        </tr>
+        </tbody>
+     </table>
 </div>
+<br>
+<div class="content">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>Color Add</h5>
+            </div>
+            <div class="card-body">
+                <form [formGroup]="colorAddForm">
+                    <div class="mb-3">
+                    <label for="colorName">Color Name</label>
+                    <div class="form-group">
+                        <input type="text" id="colorName" formControlName="colorName" class="form-control" placeholder="Color Name"/>
+                    </div></div>
+                </form>
+            </div>
+            <div class="card-body">
+                <form [formGroup]="colorAddForm">
+                    <div class="mb-3">
+                    <label for="colorCode">Color Kodu</label>
+                    <div class="form-group">
+                        <input type="text" id="colorCode" formControlName="colorCode" class="form-control" placeholder="Color Kodu"/>
+                    </div></div>
+                </form>
+            </div>
+            <div class="mb-3">
+                <label for="colorAdd"></label>
+                <div class="form-group">
+                    <button  (click)="colorAdd()"  class="btn btn-success">Add</button>
+                </div></div>
+        </div>
+    </div>
+</div>
+

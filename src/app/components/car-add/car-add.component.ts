@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import {CarService} from '../../services/car.service';
-import {Car} from '../../models/car';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ToastrService} from 'ngx-toastr';
-import {BrandService} from '../../services/brand.service';
-import {Brand} from '../../models/brand';
-import {ColorService} from '../../services/color.service';
-import {Color} from '../../models/color';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
+import { Brand } from 'src/app/models/brand/brand';
+import { Car } from 'src/app/models/car/car';
+import { Color } from 'src/app/models/color/color';
+import { BrandService } from 'src/app/services/brand/brand.service';
+import { CarService } from 'src/app/services/car/car.service';
+import { ColorService } from 'src/app/services/color/color.service';
 
 @Component({
   selector: 'app-car-add',
@@ -16,55 +16,70 @@ import {Color} from '../../models/color';
 export class CarAddComponent implements OnInit {
 
   carAddForm:FormGroup;
-  brands:Brand[];
-  colors:Color[];
-
-  constructor(private carService:CarService,private formBuilder:FormBuilder,private toastrService:ToastrService,
-              private brandService:BrandService,private colorService:ColorService) { }
+  car:Car[];
+  colors: Color[];
+  brands: Brand[];
+  
+  constructor(
+              private carService:CarService,
+              private toastrService:ToastrService,
+              private formBuilder:FormBuilder,
+              private colorService: ColorService,
+              private brandService: BrandService        
+              ) { }
 
   ngOnInit(): void {
-    this.createCarAddForm();
-    this.brandList();
-    this.colorList();
+    this.getBrands();
+    this.getColors();
+    this.createAddCarForm();
   }
 
-  createCarAddForm(){
-    this.carAddForm=this.formBuilder.group({
-      brandId:["",Validators.required],
-      colorId:["",Validators.required],
-      modelYear:["",Validators.required],
-      dailyPrice:["",Validators.required],
-      description:["",Validators.required],
-    })
-  }
-
-  brandList(){
-    this.brandService.getBrands().subscribe(response=>{
-      this.brands = response.data;
-    })
-  }
-
-  colorList(){
-    this.colorService.getColors().subscribe(response=> {
+  getColors() {
+    this.colorService.getColors().subscribe((response) => {
       this.colors = response.data;
-    })
+    });
   }
-
-  addToCar(){
-    if(this.carAddForm.valid){
-      let carModel = Object.assign({},this.carAddForm.value);
-      this.carService.addToCar(carModel).subscribe(response=>{
-        this.toastrService.success(response.message,"Success!")
-      },responseError=>{
-        if(responseError.error.ValidationErrors.length>0){
-          for(let i=0;i<responseError.error.ValidationErrors.length;i++){
-            this.toastrService.error(responseError.error.ValidationErrors[i].ErrorMessage,"Validation Error")
-          }
-        }
+  getBrands() {
+    this.brandService.getBrands().subscribe((response) => {
+      this.brands = response.data;
+    });
+  }
+    createAddCarForm(){
+        this.carAddForm=this.formBuilder.group({
+        brandId:["",Validators.required],
+        colorId:["",Validators.required],
+        modelYear:["",Validators.required],
+        dailyPrice:["",Validators.required],
+        description:["",Validators.required],
+        carName:["",Validators.required],
+        carFindexPoint:[""]
       })
-    }else{
-      this.toastrService.error("Missing Form Information!","Warning!")
     }
-  }
 
-}
+    carAdd(){
+      if(this.carAddForm.valid){
+        let carModel=Object.assign({},this.carAddForm.value);
+        carModel.brandId=Number(carModel.brandId);
+        carModel.colorId=Number(carModel.colorId);
+
+        this.carService.addCar(carModel).subscribe((response)=>{
+          console.log(carModel);
+          this.toastrService.success("Car Added");
+        },
+        responseError=>{
+          console.log(responseError.error);
+          if(responseError.error.Errors.length>0){
+            console.log(responseError.error.Errors);
+            for(let i=0; i<responseError.error.Errors.length; i++){
+              this.toastrService.error(responseError.error.Errors[i].ErrorMessage,"Validation Error");
+            }
+            }
+          })
+        }
+      else{this.toastrService.error("Error");}
+
+      }
+
+      
+    }
+

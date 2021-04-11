@@ -1,43 +1,58 @@
-import { Component, OnInit } from '@angular/core';
-import { Color } from 'src/app/models/color';
-import { ColorService } from 'src/app/services/color.service';
-import {Filters} from '../../models/filters';
+import { Component, OnInit } from "@angular/core";
+import { Router } from "@angular/router";
+import { CarDetail } from "src/app/models/carDetail/carDetail";
+import { Color } from "src/app/models/color/color";
+import { ColorService } from "src/app/services/color/color.service";
 
 @Component({
   selector: 'app-color',
   templateUrl: './color.component.html',
-  styleUrls: ['./color.component.css']
+  styleUrls: ['./color.component.css'],
 })
 export class ColorComponent implements OnInit {
 
-  colors: Color[] = [];
-  dataLoaded = false;
-  error = '';
-  currentColor: Color;
-  allColor?: Color;
-  Filters = { brandId: '', colorId: '' };
 
-  constructor(private colorService: ColorService) {
-  }
+  dataLoaded = false;
+  filterText = "";
+  title: string = 'Colors';
+  listAllBrandCss: string = 'text-start list-group-item';
+  colors: Color[] = [];
+  currentColorId: number = 0;
+  carDetails: CarDetail[] = [];
+
+  constructor(private colorService: ColorService, private _router: Router) {}
 
   ngOnInit(): void {
     this.getColors();
   }
 
   getColors() {
-    this.colorService.getColors().subscribe(response => {
+    this.colorService.getColors().subscribe((response) => {
       this.colors = response.data;
       this.dataLoaded = true;
-    }, error=>{
-      this.error = error.name;
-    })
+    });
   }
-  setCurrentColor() {
-    this.currentColor !== undefined
-      ? (Filters.colorId = this.currentColor.colorId.toString())
-      : (Filters.colorId = '');
+  getFilter(colorId:number){
+    this._router.navigate(['cars/'], {
+      queryParams: {colorId: colorId },
+    });
   }
-  allColorsSelected() {
-    return this.currentColor == undefined ? true : false;
+
+  setCurrentColor(colorId: number) {
+    this.currentColorId = colorId;
+  this.getFilter(colorId)
+  }
+
+  getCurrentColorClass(colorId: number): string {
+    if (this.currentColorId == colorId) {
+      return 'list-group-item list-group-item-action active';
+    }
+
+    return 'list-group-item list-group-item-action';
+  }
+
+  resetCurrentColor() {
+    this.currentColorId = 0;
   }
 }
+

@@ -1,19 +1,43 @@
-<div *ngIf="dataLoaded==false" class="spinner-border text-primary" role="status">
-    <span class="visually-hidden">Loading...</span>
-  </div>
+<table class="table">
 
-
-
-<table *ngIf="dataLoaded==true" class="table table-bordered">
     <thead>
-        <th>Id</th>
-        <th>User Id</th>
-        <th>Company Name</th>
-    </thead>
-    <tbody>
-        <tr *ngFor="let customer of customers">
-            <td>{{customer.userId}}</td>
-            <td>{{customer.companyName}}</td>
+        <tr>
+            <th>Customer Id</th>
+            <th>Customer Kullanıcı Id</th>
+            <th>Customer Id</th>
+            <th>Company Name Id</th>
+
         </tr>
-    </tbody>
+    </thead>
+    <tr *ngFor="let customer of customers">
+        <td>{{customer.customerId}}</td>
+        <td>{{customer.userId}}</td>
+        <td>{{customer.customerId}}</td>
+        <td>{{customer.companyName}}</td>
+
+    </tr>
+</table>
+
+
+<table class="table">
+
+    <thead>
+        <tr>
+            <th>Customer ad</th>
+            <th>Customer Last Name</th>
+            <th>Customer Id</th>
+            <th>Company Name</th>
+            <th>User Id</th>
+
+        </tr>
+    </thead>
+    <tr *ngFor="let customerDetails of customerDetails">
+        <td>{{customerDetails.firstName}}</td>
+        <td>{{customerDetails.lastName}}</td>
+        <td>{{customerDetails.customerId}}</td>
+        <td>{{customerDetails.companyName}}</td>
+        <td>{{customerDetails.userId}}</td>
+
+
+    </tr>
 </table>

@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import {BrandService} from '../../services/brand.service';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ToastrService} from 'ngx-toastr';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import {FormGroup,FormBuilder,FormControl,Validators} from '@angular/forms'
+import { BrandService } from 'src/app/services/brand/brand.service';
+import { ToastrService } from 'ngx-toastr';
+import { Brand } from 'src/app/models/brand/brand';
 
 @Component({
   selector: 'app-brand-add',
@@ -9,34 +10,54 @@ import {ToastrService} from 'ngx-toastr';
   styleUrls: ['./brand-add.component.css']
 })
 export class BrandAddComponent implements OnInit {
-  brandAddForm:FormGroup;
 
-  constructor(private brandService:BrandService,private formBuilder:FormBuilder,private toastrService:ToastrService) { }
+  brandAddForm:FormGroup;
+  brands:Brand[];
+  
+  constructor(
+    private formBuilder:FormBuilder,
+    private brandService:BrandService,
+    private toastrService:ToastrService
+  ) { }
 
   ngOnInit(): void {
-    this.createCarAddForm();
+    this.createBrandAddForm();
+    this.getBrands();
   }
 
-  createCarAddForm(){
-    this.brandAddForm = this.formBuilder.group({
+  createBrandAddForm(){
+    this.brandAddForm=this.formBuilder.group({
       brandName:["",Validators.required]
     })
   }
 
-  addToBrand(){
-    if(this.brandAddForm.valid){
-      let brandModel = Object.assign(this.brandAddForm.value);
-      this.brandService.addToBrand(brandModel).subscribe(response=>{
-        this.toastrService.success(response.message,"Successful !")
-      },responseError=>{
-        if(responseError.error.ValidationErrors.length>0){
-          for(let i=0;i<responseError.error.ValidationErrors.length;i++){
-            this.toastrService.error(responseError.error.ValidationErrors[i].ErrorMessage,"Validation Error")
-          }
-        }
+    getBrands(){
+      this.brandService.getBrands().subscribe(response=>{
+        this.brands=response.data;
       })
-    }else{
-      this.toastrService.error("Missing Form Information!","Dikkat!")
+    }
+
+  BrandAdd(){
+    if(this.brandAddForm.valid){
+      let brandModel=Object.assign({},this.brandAddForm.value);
+      this.brandService.addBrand(brandModel).subscribe((response)=>{
+        console.log(brandModel);
+        this.toastrService.success("Brand Addndi.");
+            },
+            responseError=>{
+              if(responseError.error.Errors.length>0){
+                console.log(responseError.error.Errors);
+
+                for(let i=0; i<responseError.error.Errors.length; i++){
+                  this.toastrService.error(responseError.error.Errors[i].ErrorMessage,"");
+                }
+               
+              } 
+              else{this.toastrService.error("Formunuz Eksik Warning.");}
+            }
+            )
     }
   }
 }
+
+

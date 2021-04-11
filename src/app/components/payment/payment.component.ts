@@ -1,12 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
-import {CartItem} from '../../models/cartItem';
-import {NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
-import {RentalDetail} from '../../models/rentalDetail';
-import {FakeCreditCard} from '../../models/fakeCreditCard';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {RentalService} from '../../services/rental.service';
-import {ToastrService} from 'ngx-toastr';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { Card } from 'src/app/models/card';
+import { CarDetail } from 'src/app/models/carDetail/carDetail';
+import { Customer } from 'src/app/models/customer/customer';
+import { CustomerDetails } from 'src/app/models/customerDetails/customerDetails';
+import { Rental } from 'src/app/models/rental/rental';
+import { CarService } from 'src/app/services/car/car.service';
+import { CardService } from 'src/app/services/card.service';
+import { LocalStroageService } from 'src/app/services/local-stroage.service';
+import { RentalService } from 'src/app/services/rental/rental.service';
 
 @Component({
   selector: 'app-payment',
@@ -15,52 +19,131 @@ import {ToastrService} from 'ngx-toastr';
 })
 export class PaymentComponent implements OnInit {
 
-  totalPrice: number = 0;
-  returnDate: Date;
-  carId: number;
-  year: number;
-  month: number;
-  day: number;
-  rental: RentalDetail = new RentalDetail();
-  fakeCreditCard: FakeCreditCard = new FakeCreditCard();
-  rentalForm: FormGroup;
+  carDetail: CarDetail;
+  paymentAddForm: FormGroup;
+  cardAddForm:FormGroup;
+  rental: Rental;
+  card:Card;
+  cards:Card[];
+  selectedCard:Card;
+  saveUsername:boolean;
 
-  constructor(private activatedRoute: ActivatedRoute,
-              private rentalService: RentalService,
-              private toastrService: ToastrService,
-              private formBuilder: FormBuilder) {
-  }
+  constructor(private rentalService: RentalService,
+    private carService: CarService,
+    private localStorageService: LocalStroageService,
+    private formBuilder: FormBuilder,
+    private toastrService: ToastrService,
+    private router: Router,
+    private cardService:CardService
+             )   { }
 
   ngOnInit(): void {
-    this.createForm();
-    this.activatedRoute.params.subscribe(params => {
-      if (params['myrental']) {
-        this.rental = JSON.parse(params['myrental']);
-      }
-    });
+    this.getCurrentRental();
+    this.getCarDetailById(this.rentalService.getRentingCar().carId)
+    this.getCardsByCustomerId(this.localStorageService.getCurrentCustomer().customerId);
+    this.createPaymentAddForm();
+    }
+    
+
+   onSaveUsernameChanged(value:boolean){this.saveUsername = value;}
+
+
+  createPaymentAddForm() {
+     if(this.selectedCard){
+      this.paymentAddForm = this.formBuilder.group({
+        cardOnName: [this.selectedCard.cardOnName, Validators.required],
+        cardNumber: [this.selectedCard.cardNumber, Validators.required],
+        cardValidDate: [this.selectedCard.cardValidDate, Validators.required],
+        cardCvv: [this.selectedCard.cardCvv, Validators.required],
+        customerId:[this.localStorageService.getCurrentCustomer().customerId,Validators.required],
+        cardType:["Visa"],
+      })
+     } else {
+      this.paymentAddForm = this.formBuilder.group({
+        cardOnName: ["", Validators.required],
+        cardNumber: ["", Validators.required],
+        cardValidDate: ["", Validators.required],
+        cardCvv: [0, Validators.required],
+        customerId:[this.localStorageService.getCurrentCustomer().customerId,Validators.required],
+        cardType:["Visa"],
+      })
+     }
+
+
+    this.card=this.paymentAddForm.value;}
+
+    cardAdd(){
+      if(this.paymentAddForm.valid){
+        let cardModel=this.paymentAddForm.value;
+        this.cardService.addCard(cardModel).subscribe(responseSuccess=>{
+        this.toastrService.success("Saved Card");
+        }, responseError=>{})
+    }
+      else{this.toastrService.error("Error");}
+         }
+
+
+   
+    
+    pay() {
+   
+    this.rentalService.addRental(this.rental).subscribe(responseSuccess => {
+     if(this.saveUsername==true){this.cardAdd();}
+      this.toastrService.success(responseSuccess.message, "Rental is successful")
+      this.router.navigate(['/cars']);
+    }, responseError => {
+      console.log(responseError)
+      this.toastrService.error(responseError.error.message,"Rental Failed");
+          });
   }
 
-  createForm() {
-    this.rentalForm = this.formBuilder.group({
-      cardHolderName: ['', Validators.required],
-      cardNumber: ['', Validators.required],
-      expirationMonth: ['', Validators.required],
-      expirationYear: ['', Validators.required],
-      cvv: ['', Validators.required]
 
 
-      // cardHolderName: ['', Validators.required, Validators.maxLength(50)],
-      // cardNumber: ['', Validators.required, Validators.maxLength(16), Validators.minLength(16)],
-      // expirationMonth: ['', Validators.required, Validators.min(1), Validators.max(12)],
-      // expirationYear: ['', Validators.required, Validators.min(new Date().getFullYear()),
-      //   Validators.max(new Date().getUTCFullYear() + 30)],
-      // cvv: ['', Validators.required,Validators.minLength(3),Validators.maxLength(3)],
-    });
+
+
+    getCardsByCustomerId(customerId:number){
+      this.cardService.getCardsByCustomerId(customerId).subscribe(response=>{
+        this.cards=response.data;
+      })
+
+    }
+
+    setCurrentCard(id:number){
+      this.cardService.getCardById(id).subscribe(response=>{
+        this.selectedCard=response.data;
+        this.localStorageService.setItem("activeCard",response.data.cardOnName);
+        this.createPaymentAddForm();
+        console.log(this.selectedCard);
+      })
+    }
+
+  getCurrentCustomer(): CustomerDetails {    return this.localStorageService.getCurrentCustomer();  }
+
+  getCurrentRental() {    this.rental = this.rentalService.getRentingCar();  }
+
+  calcTotalPrice(): number {
+    let rentDate = new Date(this.rental.rentDate)
+    let returnDate = new Date(this.rental.returnDate)
+
+    let rangeDay = this.getDiffBetweenDays(returnDate, rentDate)
+
+    let totalPrice = rangeDay * this.carDetail.dailyPrice
+    return totalPrice;
   }
 
-  addRental(rental: RentalDetail, fakeCreditCard: FakeCreditCard) {
-    this.rentalService.addRental(rental, fakeCreditCard).subscribe(response => {
-      this.toastrService.success('Car Rented');
+  getDiffBetweenDays(rentDate: Date, returnDate: Date) {
+    let MsOneDay = 1000 * 60 * 60 * 24;
+
+    let dateOne = Date.UTC(rentDate.getFullYear(), rentDate.getMonth(), rentDate.getDay())
+    let dateTwo = Date.UTC(returnDate.getFullYear(), returnDate.getMonth(), returnDate.getDay())
+
+    return Math.floor((dateTwo - dateOne) / MsOneDay)
+  }
+
+  getCarDetailById(carId: number) {
+    this.carService.getCarById(carId).subscribe(response => {
+      this.carDetail = response.data;
+      this.calcTotalPrice();
     });
   }
 }

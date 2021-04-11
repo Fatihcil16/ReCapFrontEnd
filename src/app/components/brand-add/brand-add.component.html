@@ -1,21 +1,49 @@
-<div class="container">
-  <div class="col-md-12">
-    <div class="card">
-      <div class="card-header"><h5 class="card-title">Add New Brand</h5></div>
-      <div class="card-body">
-        <form [formGroup]="brandAddForm">
-          <div class="mb-3 row">
-            <label for="brandName" class="col-sm-2 col-form-label">Brand</label>
-            <div class="col-sm-10">
-              <input type="text" id="brandName" formControlName="brandName"
-                     class="form-control" placeholder="Marka Adı"/>
+<div>
+
+    <table class="table table-hover table-striped mt-4 border">
+            <thead>
+        <tr>
+           <th>Brand Id</th>
+           <th>Brand Name</th>
+           <th></th>
+      
+  
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let brand of brands"  routerLink="/brands/{{brand.brandId}}">
+           <th>{{ brand.brandId }}</th>
+           <th>{{ brand.brandName }}</th>
+           <td><button class="btn btn-warning">Update</button></td>
+
+        </tr>
+        </tbody>
+     </table>
+</div>
+
+
+
+<br>
+<div class="content">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>Add Brand</h5>
             </div>
-          </div>
-        </form>
-      </div>
-      <div class="card-footer">
-        <button class="btn btn-outline-primary" (click)="addToBrand()">Add Brand</button>
-      </div>
+            <div class="card-body">
+                <form [formGroup]="brandAddForm">
+                    <div class="mb-3">
+                    <label for="brandName">Brand Name</label>
+                    <div class="form-group">
+                        <input type="text" id="brandName" formControlName="brandName" class="form-control" placeholder="Brand Name"/>
+                    </div></div>
+                </form>
+            </div>
+            <div class="mb-3">
+                <label for="brandAdd"></label>
+                <div class="form-group">
+                    <button  (click)="BrandAdd()"  class="btn btn-success">Add</button>
+                </div></div>
+        </div>
     </div>
-  </div>
 </div>

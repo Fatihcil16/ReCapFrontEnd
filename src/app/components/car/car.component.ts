@@ -1,87 +1,77 @@
 import { Component, OnInit } from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import { Car } from 'src/app/models/car';
-import { CarService } from 'src/app/services/car.service';
-import {faLiraSign} from '@fortawesome/free-solid-svg-icons';
-import {environment} from '../../../environments/environment';
-import {ToastrService} from 'ngx-toastr';
-import {CartService} from '../../services/cart.service';
-import {RentalService} from '../../services/rental.service';
-import {Rental} from '../../models/rental';
+import { ActivatedRoute } from '@angular/router';
+import { Car } from 'src/app/models/car/car';
+import { CarDetail } from 'src/app/models/carDetail/carDetail';
+import { CarService } from 'src/app/services/car/car.service';
 
 @Component({
   selector: 'app-car',
   templateUrl: './car.component.html',
   styleUrls: ['./car.component.css']
 })
+
 export class CarComponent implements OnInit {
-  cars:Car[]=[];
-  apiUrl = environment.baseUrl;
-  dataLoaded = false;
-  faLira = faLiraSign;
-  filterText ="";
-  rentalDetail: Rental[];
-  carId :number;
+   carDetail: CarDetail | undefined;
+   carDetails: CarDetail[] = [];
+   car:Car[]=[];
+   filterText="";
+   dataLoaded=false;
+   colorFilter="";
 
-  constructor(private carService:CarService,
-              private activatedRoute:ActivatedRoute,
-              private toastrService:ToastrService,
-              private cartService:CartService,
-              private rentalService:RentalService,private router: Router
-              ) { }
+   constructor(
+      private carService: CarService, 
+      private activatedRoute: ActivatedRoute) {
+   }
 
-  ngOnInit(): void {
-    this.activatedRoute.params.subscribe(params => {
-      if (params['brandId'] && params['colorId'])
-        this.getCarByBrandAndColor(params['brandId'], params['colorId']);
-      else if (params['brandId']) this.getCarsByBrand(params['brandId']);
-      else if (params['colorId']) this.getCarsByColor(params['colorId']);
-      else this.getCars();
-    })
-  }
+   ngOnInit(): void {
+      this.activatedRoute.queryParams.subscribe((params) => {    
+       if (params['colorId'] && params['brandId']) {
+         this.getCurrentBrandAndColorId( params['brandId'],params['colorId']);
+       } else if (params['colorId']) {
+         this.getCarsByColorId(params['colorId']);
+       } else if (params['brandId']) {
+         this.getCarsByBrandId(params['brandId']);
+       } else {
+         this.getCars();
+       }
+     });
 
-  getCarByBrandAndColor(brandId: number, colorId: number) {
-    this.carService
-      .getCarByBrandAndColor(brandId, colorId)
-      .subscribe((response) => {
-        this.cars = response.data;
-        this.dataLoaded = true;
+   }
+
+   getCarsByBrandAndColorId(brandId: number,colorId: number){
+      this.carService.getCarsByBrandAndColorId(brandId,colorId).subscribe((response)=>{
+         this.carDetails=response.data;
+         this.dataLoaded=true;
+      })
+   }
+
+getCurrentBrandAndColorId(brandId:number,colorId:number){
+   this.carService.getCarsByBrandAndColorId(brandId,colorId).subscribe((response)=>{
+     this.carDetails=response.data;
+     this.dataLoaded=true;
+     console.log("başlName. colorId:",colorId," brandId:",brandId);
+     console.log(response.data);
+   })
+ }
+
+   getCars() {
+      this.carService.getCars().subscribe((response) => {
+         this.carDetails = response.data;
+         this.dataLoaded=true;
       });
-  }
+   }
 
-  changeFilterTextSize(filterText:string){
-    this.filterText = filterText.toLocaleUpperCase();
-  }
+   getCarsByBrandId(brandId: number) {
+      this.carService.getCarsByBrandId(brandId).subscribe((response) => {
+         this.carDetails = response.data;
+         this.dataLoaded=true;
+      });
+   }
 
-  getCars(){
-    this.carService.getCars().subscribe((response)=>{
-      this.cars = response.data;
-      this.dataLoaded = true;
-    })
-  }
-
-  getCarsByBrand(brandId:number) {
-    this.carService.getCarsByBrand(brandId).subscribe(response=>{
-      this.cars = response.data
-      this.dataLoaded = true;
-    })
-  }
-
-  getCarsByColor(colorId:number) {
-    this.carService.getCarsByColor(colorId).subscribe(response=>{
-      this.cars = response.data
-      this.dataLoaded = true;
-    })
-  }
-
-  addToCart(car:Car){
-    this.rentalService.getRentalBycarId(car.carId).subscribe(response => {
-      this.rentalDetail = response.data;
-    });
-    if (this.cartService.list().length > 0) {
-      this.router.navigate(['/cart'])
-    }
-    this.cartService.addToCart(car);
-    this.router.navigate(['/cart'])
-  }
+   getCarsByColorId(colorId: number) {
+      this.carService.getCarsByColorId(colorId).subscribe((response) => {
+         this.carDetails = response.data;
+         this.dataLoaded=true;
+      });
+   }
 }

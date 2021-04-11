@@ -1,24 +1,21 @@
-<div *ngIf="dataLoaded==false" class="spinner-border text-primary" role="status">
-    <span class="visually-hidden">Loading...</span>
+<form [formGroup]="addRentCarForm" (ngSubmit)="checkCarRentable()">
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="form-floating mb-3">
+        <input type="datetime-local" class="form-control" id="rentDate" formControlName="rentDate" placeholder="rentDate">
+        <label for="rentDate">Rent Date</label>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="form-floating">
+        <input type="datetime-local" class="form-control" id="returnDate" formControlName="returnDate" placeholder="returnDate">
+        <label for="returnDate">Return Date</label>
+      </div>
+    </div>
   </div>
 
-
-
-<table *ngIf="dataLoaded==true" class="table table-bordered">
-    <thead>
-        <th>Rental Id</th>
-        <th>Brand Name</th>
-        <th>First Name & Last Name</th>
-        <th>Rent Date</th>
-        <th>Return Date</th>
-    </thead>
-    <tbody>
-        <tr *ngFor="let rental of rentals">
-            <td>{{rental.rentalId}}</td>
-            <td>{{rental.brandName}}</td>
-            <td>{{rental.userName}}</td>
-            <td>{{rental.rentDate}}</td>
-            <td>{{rental.returnDate}}</td>
-        </tr>
-    </tbody>
-</table>
+  <div class="text-end">
+    <button *ngIf="carId" class="btn btn-primary px-4 rounded-0">Rent</button>
+  </div>
+</form>

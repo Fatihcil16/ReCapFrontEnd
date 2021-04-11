@@ -1,96 +1,119 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-
-</head>
-<body>
-
 <div class="row">
-  <div class="col-75">
-    <div class="container">
-      <form [formGroup]="rentalForm" method="post">
-        <div class="row">
-          <div class="col-50">
-            <h3>	Billing Address </h3>
-            <label for="fname"><i class="fa fa-user"></i> Full Name</label>
-            <input type="text" id="fname" name="firstname" placeholder="Fatih Çil">
-            <label for="email"><i class="fa fa-envelope"></i> Email</label>
-            <input type="text" id="email" name="email" placeholder="fatihcil.2001@gmail.com">
-            <label for="adr"><i class="fa fa-address-card-o"></i> Adress</label>
-            <input type="text" id="adr" name="address" placeholder="www.fatihcil.com">
-            <label for="city"><i class="fa fa-institution"></i> City</label>
-            <input type="text" id="city" name="city" placeholder="City">
+  
+  <div class="col-md-6">
+    <div class="card rounded-0">
+      <div class="card-header fw-bold text-center lead py-3">Invoice Details</div>
 
-            <div class="row">
-              <div class="col-50">
-                <label for="state">Street</label>
-                <input type="text" id="state" name="state" placeholder="Street">
-              </div>
+      <div class="card-body p-0">
+        <table class="table table-striped">
+          <tbody>
 
-            </div>
-          </div>
+            <tr>
+              <th>User</th>
+              <td>{{ getCurrentCustomer().firstName }} {{ getCurrentCustomer().lastName }}</td>
+            </tr>
 
-          <div class="col-50">
-            <h3>Card Information</h3>
-            <label for="cname">Card Name</label>
-            <input type="text" formControlName="cardHolderName"
-                   [(ngModel)]="fakeCreditCard.cardHolderName" id="cname"
-                   name="cardname" placeholder="Name">
-            <div  class="alert alert-danger"
-                  *ngIf="rentalForm.get('cardHolderName').hasError('required') &&
-                  rentalForm.get('cardHolderName').dirty">Card Name Required!</div>
+            <tr>
+              <th>Car Brand</th>
+              <td>{{ carDetail.brandName }}</td>
+            </tr>
 
-            <label for="ccnum">Card Number</label>
-            <input type="text" formControlName="cardNumber"
-                   [(ngModel)]="fakeCreditCard.cardNumber" id="ccnum"
-                   name="cardnumber" placeholder="1111222233334444">
-            <div  class="alert alert-danger"
-                  *ngIf="rentalForm.get('cardNumber').hasError('required') &&
-                  rentalForm.get('cardNumber').dirty">Card Number Required!</div>
+            <tr>
+              <th>Rent Date</th>
+              <td>{{rental.rentDate}}</td>
+            </tr>
 
-            <label for="expmonth">Month</label>
-            <input type="text" formControlName="expirationMonth"
-                   [(ngModel)]="fakeCreditCard.expirationMonth" id="expmonth"
-                   name="expmonth" placeholder="5">
-            <div  class="alert alert-danger"
-                  *ngIf="rentalForm.get('expirationMonth').hasError('required') &&
-                  rentalForm.get('expirationMonth').dirty">Month cannot be left blank</div>
+            <tr>
+              <th>Return Date</th>
+              <td>{{rental.returnDate}}</td>
+            </tr>
 
-            <div class="row">
-              <div class="col-50">
-                <label for="expyear">Year</label>
-                <input type="text" formControlName="expirationYear"
-                       [(ngModel)]="fakeCreditCard.expirationYear" id="expyear"
-                       name="expyear" placeholder="2025">
-                <div  class="alert alert-danger"
-                      *ngIf="rentalForm.get('expirationYear').hasError('required') &&
-                  rentalForm.get('expirationYear').dirty">Year cannot be left blank</div>
+            <tr>
+              <th>Total Price</th>
+              <td>{{ calcTotalPrice() | currency:'₺ ' }} </td>
+            </tr>
 
-
-              </div>
-              <div class="col-50">
-                <label for="cvv">Cvv</label>
-                <input type="text" formControlName="cvv"
-                       [(ngModel)]="fakeCreditCard.cvv" id="cvv"
-                       name="cvv" placeholder="352">
-                <div  class="alert alert-danger"
-                      *ngIf="rentalForm.get('cvv').hasError('required') &&
-                  rentalForm.get('cvv').dirty">Cvv cannot be left blank</div>
-
-              </div>
-            </div>
-          </div>
-
-        </div>
-        <label>
-          <input type="checkbox" checked="checked" name="sameadr"> Save Address Information
-        </label>
-        <button (click)="addRental(rental, fakeCreditCard)" [disabled]="!rentalForm.valid" class="btn">Rent Now</button>
-      </form>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
+
+  <div class="col-md-6">
+    <div class="card rounded-0">
+      <div class="card-header fw-bold text-center lead py-3">Card Informations</div>
+
+      <div class="card-body">
+        <form [formGroup]="paymentAddForm" (ngSubmit)="pay()">
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="cardOnName"  placeholder="cardOnName" formControlName="cardOnName">
+            <label for="cardOnName">Card On Name</label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="cardNumber" placeholder="cardNumber" formControlName="cardNumber">
+            <label for="cardNumber">Card Number</label>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="cardValidDate" placeholder="cardValidDate" formControlName="cardValidDate">
+                <label for="cardValidDate">Card Valid Date</label>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="cardCvv" placeholder="cardCvv" formControlName="cardCvv">
+                <label for="cardCvv">CVV</label>
+              </div>
+            </div>
+          </div>
+          <div class="form-check">
+            <input #saveUserNameCheckBox class="form-check-input" type="checkbox"  id="saveUserNameCheckBox" 
+            [checked]="saveUsername" 
+            (change)="onSaveUsernameChanged(saveUserNameCheckBox.checked)"
+            >
+            <label class="form-check-label" for="flexCheckChecked">
+              Save Card
+            </label>
+          </div>
+          <div class="text-end">
+            <button type="submit" class="btn btn-primary">Buy</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+       <table class="table" >
+         <tbody>
+           <thead>Cards</thead>
+           <tr>
+             <th>Card Id</th>
+             <th>Card Number</th>
+             <th>Name</th>
+             <th>Card SKT</th>
+             <th>Card CVV</th>
+             <th>Card Type</th>
+             <th></th>
+
+            </tr>
+           <tr *ngFor="let card of cards"  >
+             <td>{{card.id}}</td>
+             <td>{{card.cardNumber}}</td>
+             <td>{{card.cardOnName}}</td>
+             <td>{{card.cardValidDate}}</td>
+             <td>{{card.cardCvv}}</td>
+             <td>{{card.cardType}}</td>
+             <td (click)="setCurrentCard(card.id)"><button class="btn btn-info">Select</button></td>
+            </tr>
+         </tbody>
+       </table>
+    </div>
+  </div>
+
 </div>
-</body>
-</html>

@@ -1,27 +1,64 @@
-<div class="card" style="margin-bottom: 15px;">
-  <div class="card-body">
-    <ngb-carousel>
-      <ng-template ngbSlide *ngFor ="let car of carDetails">
-        <div class="picsum-img-wrapper">
-          <img  class="d-block w-100" style="width: 900px; height: 435px;" src="{{apiUrl}}{{car.webImagePath}}" >
+
+
+
+<div class="row mt-4">
+  <div class="col-lg-6">
+    <div
+      id="carouselExampleControls"
+      class="carousel carousel-dark  slide"
+      data-bs-ride="carousel"
+    >
+      <div class="carousel-inner">
+        <div *ngFor="let carImage of carImages" (click)="setCurrentImageClass(carImage)" [class]="getCurrentImageClass(carImage)">
+          <img
+            src="{{ imageBaseUrl + carImage.imagePath }}"
+            class="d-block w-100"
+            alt="..."
+          />
         </div>
-      </ng-template>
-    </ngb-carousel>
-  </div>
-  <div *ngFor ="let car of carDetails; let i = index">
-    <div class="card-footer" *ngIf="i<1">
-      <h5 class="card-title">{{car.brandName}} {{car.description}}</h5>
-      <hr>
-      <p class="card-text"><b>Brand:</b> {{car.brandName}}</p>
-      <p class="card-text"><b>Model:</b> {{car.description}}</p>
-      <p class="card-text"><b>Color:</b>{{car.colorName}}</p>
-      <p class="card-text"><b>Year:</b>{{car.modelYear}}</p>
-      <p class="card-text"><b>Price:</b> {{car.dailyPrice}} <fa-icon [icon]="faLira"></fa-icon></p>
-      <a (click)="addCart(car)" class="btn btn-primary" style="margin-right: 5px;">Rent</a>
-      <a routerLink="/car/update/{{car.carId}}" class="btn btn-primary"style="margin-right: 5px;">Edit Car</a>
-      <a routerLink="/color/update/{{car.colorId}}" class="btn btn-primary"style="margin-right: 5px;">Edit Color</a>
-      <a routerLink="/brand/update/{{car.brandId}}" class="btn btn-primary">Edit Brand</a>
+      </div>
+      <button
+        class="carousel-control-prev"
+        type="button"
+        data-bs-target="#carouselExampleControls"
+        data-bs-slide="prev"
+      >
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      </button>
+      <button
+        class="carousel-control-next"
+        type="button"
+        data-bs-target="#carouselExampleControls"
+        data-bs-slide="next"
+      >
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      </button>
     </div>
   </div>
-</div>
 
+  <div *ngIf="carDetail" class="col-lg-6 my-auto">
+    <h1>{{ carDetail.brandName }}</h1>
+    <hr style="width: 25%; opacity: 1; height: 2px" />
+    <ul class="list-unstyled">
+      <li>
+        <h5>
+          <strong>Model Name: </strong>{{ carDetail.description }},
+          {{ carDetail.brandName }}
+        </h5>
+      </li>
+      <li>
+        <h5><strong>Color Name: </strong>{{ carDetail.colorName }}</h5>
+      </li>
+      <li>
+        <h5><strong>Model Year: </strong>{{ carDetail.modelYear }}</h5>
+      </li>
+      <li>
+        <h5><strong>Daily Price: </strong>{{ carDetail.dailyPrice }} ₺</h5>
+      </li>
+      <li>
+        <h5><strong>Car Findex Point </strong>{{ carDetail.carFindexPoint}}</h5>
+      </li>
+      <app-rental></app-rental>
+    </ul>
+  </div>
+</div>

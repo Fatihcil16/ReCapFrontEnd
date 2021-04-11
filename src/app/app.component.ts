@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
-import { NgbCarouselConfig } from '@ng-bootstrap/ng-bootstrap';
+
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
-  providers: [NgbCarouselConfig]  // add NgbCarouselConfig to the component providers
+  styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'RentACar';
+  title = 'CarRental-FrontEnd';
 }

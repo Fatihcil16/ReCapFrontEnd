@@ -1,51 +1,68 @@
 import { Component, OnInit } from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import { Car } from 'src/app/models/car';
-import { CarService } from 'src/app/services/car.service';
-import {faLiraSign} from '@fortawesome/free-solid-svg-icons';
-import {environment} from '../../../environments/environment';
-import {CartService} from '../../services/cart.service';
-import {RentalService} from '../../services/rental.service';
-import {Rental} from '../../models/rental';
-import {ToastrService} from 'ngx-toastr';
+import { ActivatedRoute } from '@angular/router';
+import { CarDetail } from 'src/app/models/carDetail/carDetail';
+import { CarImage } from 'src/app/models/carImage/carImage';
+import { CarImageService } from 'src/app/services/car-image.service';
+import { CarService } from 'src/app/services/car/car.service';
+
 
 @Component({
   selector: 'app-car-detail',
-  templateUrl: './car-detail.component.html',
+  templateUrl:'./car-detail.component.html',
   styleUrls: ['./car-detail.component.css']
 })
 export class CarDetailComponent implements OnInit {
-  carDetails:Car[];
-  faLira = faLiraSign;
-  apiUrl = environment.baseUrl;
-  rentalDetail: Rental[];
 
-  constructor(private carService:CarService,private activatedRoute:ActivatedRoute,
-              private cartService:CartService, private rentalService: RentalService,
-              private router: Router) { }
+   carDetail: CarDetail;
+   carImages: CarImage[] = [];
+   imageBaseUrl = "https://localhost:44346/";
+   currentImage:CarImage;
 
-  ngOnInit(): void {
-    this.activatedRoute.params.subscribe(params => {
-      if(params["carId"]){
-        this.getCarDetail(params["carId"]);
+   constructor(
+      private carService: CarService,
+      private activatedRoute: ActivatedRoute,
+      private carImageService: CarImageService) {
+   }
+
+   ngOnInit(): void {
+      this.activatedRoute.params.subscribe((params) => {
+         if (params['carId']) {
+            this.getPhotosByCarId(params['carId']);
+            this.getCarById(params['carId']);
+         }
+      });
+   }
+
+   getCarById(id: number) {
+      this.carService.getCarById(id).subscribe((response) => {
+         this.carDetail = response.data;
+        // console.log(this.carDetail);
+
+      });
+   }
+
+   getPhotosByCarId(carId: number) {
+      this.carImageService.getImagesByCarId(carId).subscribe((response) => {
+         this.carImages = response.data;
+      });
+   }
+
+   read(url: string){
+      console.log(url)
+      return url;
+   }
+
+   getCurrentImageClass(carImage:CarImage){
+      if(this.carImages[0]==carImage){
+         return "carousel-item active";
       }
-    });
-  }
+      else {return "carousel-item";
+   }
 
-  getCarDetail(carId:number){
-    this.carService.getCarDetail(carId).subscribe(response=>{
-      this.carDetails = response.data
-    })
-  }
+   }
+   setCurrentImageClass(carImage:CarImage){
+      this.currentImage=carImage;
+     }
 
-  addCart(car:Car){
-    this.rentalService.getRentalBycarId(car.carId).subscribe(response => {
-      this.rentalDetail = response.data;
-    });
-    if (this.cartService.list().length > 0) {
-      this.router.navigate(['/cart'])
-    }
-    this.cartService.addToCart(car);
-    this.router.navigate(['/cart'])
+
   }
-}

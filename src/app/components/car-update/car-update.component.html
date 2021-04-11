@@ -1,54 +1,76 @@
-<div class="container">
-<div class="col-md-12">
-  <div class="card">
-    <div class="card-header"><h5 class="card-title">Edit Car</h5></div>
-    <div class="card-body">
-      <form [formGroup]="carUpdateForm">
-        <div class="mb-3 row">
-          <label class="col-sm-2 col-form-label">Choose Brand</label>
-          <div class="col-sm-10">
-            <select class="form-control" formControlName="brandId">
-              <option *ngFor="let brand of brands" [ngValue]="brand.brandId">{{brand.brandName}}</option>
-            </select>
-          </div>
+<div class="row mt-4">
+    <div class="col-lg-9">
+
+        <div class="card">
+            <div class="card-header fw-bold">Car Update</div>
+            <div class="card-body">
+                <form autocomplete="off" *ngIf="car" [formGroup]="carUpdateForm" (ngSubmit)="carUpdate()">
+                    <div class="form-floating mb-3">
+                
+                    <select class="form-select" id="brands" formControlName="brandId">
+                        <option value="">-- Brand --</option>
+   
+                        <option *ngFor="let brand of brands" [value]="brand.brandId">
+                           {{brand.brandName}}
+                        </option>
+                     </select>
+                     <label for="brands">Brands</label>
+                    </div>
+
+
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="colors" formControlName="colorId">
+                           <option value="">-- Color --</option>
+      
+                           <option *ngFor="let color of colors" [value]="color.colorId">
+                              {{ color.colorName }}
+                           </option>
+                        </select>
+                        <label for="colors">Colors</label>
+                     </div>
+
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="modelYear" placeholder="modelYear"
+                            formControlName="modelYear">
+                        <label for="modelYear">Model Year</label>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="dailyPrice" placeholder="dailyPrice"
+                            formControlName="dailyPrice">
+                        <label for="dailyPrice">DailyPrice</label>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="description" placeholder="description"
+                            formControlName="description">
+                        <label for="description">Description</label>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="carName" placeholder="carName"
+                            formControlName="carName">
+                        <label for="carName">Model Name</label>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="carFindexPoint">Car Findex Point</label>
+                        <div class="form-group">
+                            <input type="number" id="carFindexPoint" formControlName="carFindexPoint" class="form-control" placeholder="Car Findex Point"/>
+                        </div></div>
+
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary rounded-0 px-4 fw-bold"> Update </button>
+                    </div>
+                </form>
+            </div>
         </div>
 
-        <div class="mb-3 row">
-          <label class="col-sm-2 col-form-label">Choose Color</label>
-          <div class="col-sm-10">
-            <select class="form-control" formControlName="colorId">
-              <option *ngFor="let color of colors" [ngValue]="color.colorId">{{color.colorName}}</option>
-            </select>
-          </div>
-        </div>
-        <div class="mb-3 row">
-          <label for="modelYear" class="col-sm-2 col-form-label">Model Year</label>
-          <div class="col-sm-10">
-            <input type="number" id="modelYear" formControlName="modelYear" class="form-control"
-                   placeholder="Model Year"/>
-          </div>
-        </div>
-        <div class="mb-3 row">
-          <label for="dailyPrice" class="col-sm-2 col-form-label">Daily Price</label>
-          <div class="col-sm-10">
-            <input type="number" id="dailyPrice" formControlName="dailyPrice" class="form-control"
-                   placeholder="Daily Price"/>
-          </div>
-        </div>
-        <div class="mb-3 row">
-          <label for="description" class="col-sm-2 col-form-label">Description</label>
-          <div class="col-sm-10">
-            <input type="text" id="description" formControlName="description" class="form-control"
-                   placeholder="Description"/>
-          </div>
-        </div>
-        <input type="hidden" id="id" formControlName="id" class="form-control"
-               placeholder="Description"/>
-      </form>
     </div>
-    <div class="card-footer">
-      <button class="btn btn-outline-primary" (click)="updateCar()">Edit Car</button>
+    <div class="col-lg-3">
+        <div class="d-grid">
+            <button class="btn btn-primary rounded-0" routerLink="/cars">Return Cars</button>
+        </div>
     </div>
-  </div>
-</div>
 </div>
