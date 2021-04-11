@@ -34,7 +34,7 @@
       <ul class="list-group list-group-flush">
          <li class="list-group-item">Daily Price: <strong>{{car.dailyPrice | currency:'TL'}}</strong></li>
             <li class="list-group-item">Tax Included Price : <strong>{{car.dailyPrice | vatAdded:18 | currency:'TL'}}</strong></li>
-            <li class="list-group-item"><Button class="btn btn-warning" routerLink="/cars/update/{{car.carId}}">Update</Button></li>
+            <li class="list-group-item"><Button class="btn btn-primary" routerLink="/cars/update/{{car.carId}}">Update</Button></li>
 
          </ul>
          </div>
